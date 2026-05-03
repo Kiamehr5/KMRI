@@ -1,77 +1,123 @@
-# KMRI — High-Performance MRI Compression Format
+# 🚀 KMRI — Fast MRI Compression for Massive 3D Volumes
 
-KMRI is a fast, chunk-based, quantized compression format for large 3D medical-style volumes.  
-It is designed for speed, simplicity, and significant size reduction, especially on MRI-like data.
+**KMRI is a high-performance compression format for .nii / .nii.gz files, designed for large 3D medical-style volumes.
+It delivers significant size reduction (up to 6×–900×) with fast decoding and minimal complexity.**
 
-This repository includes:
-- A reference encoder/decoder
-- A synthetic MRI generator (safe, no real medical data)
-- Reproducible benchmarks
-- A documented file format
+## ✨ Features
+• 🧱 Chunk-based compression for efficient access
 
----
+• ⛔ Zero-block skipping for sparse regions
 
-## Why KMRI Exists
+• 🎚️ 8-bit / 16-bit quantization
 
-Standard `.nii` files store raw voxel arrays with no chunking, no entropy reduction, and no structural awareness.  
-Even `.nii.gz` only applies gzip to the entire file.
+• ⚡ Zstandard (Zstd) backend
 
-KMRI improves on this with:
-- Chunk-level compression  
-- Zero-block skipping  
-- 8-bit or 16-bit quantization  
-- Zstd backend  
-- ROI-aware chunking  
-- Minimal metadata overhead  
+• 🎯 ROI-aware chunking
 
-The result is dramatically smaller files with fast decode paths.
+• 📦 Low metadata overhead
 
----
+• 🚀 Fast encode/decode pipeline
 
-## Benchmarks (Synthetic MRI)
+### ⚡ Quick Start
+``pip install -r requirements.txt``
 
-All tests use a high-entropy synthetic MRI with:
-- Rician noise  
-- Bias field  
-- Random lesions  
-- High-frequency noise  
-- Partial-volume blur  
-- No zero regions  
-
-| Dataset | Raw Size | KMRI | Ratio | Notes |
-|--------|----------|------|-------|-------|
-| 512³ uint16 | 256 MB | 42.1 MB | 6.07× | High-entropy synthetic MRI |
-| 800³ uint16 | 1.02 GB | 1.1 MB | 927× | Smooth synthetic MRI (zero-block skip dominates) |
-
----
-
-## Reproducible Test
-
-``python fake_nii.py``
+**Run the code below to demonstrate compression and decompression**
 
 ``python test.py``
 
-**Note that test.py is assuming the synthetic_realistic_hardcore.nii will be saved in the same working directory!**
-
----
-
-## Synthetic MRI Generator
-
-This repository includes a fully synthetic, safe MRI-like generator that simulates:
-- White/grey/CSF layers  
-- Rician noise  
-- Bias field  
-- Random lesions  
-- High-frequency noise  
-- Partial-volume blur  
-
-No real medical data is used.
+**Note that **test.py** assumes that the directory of the synthetic_realistic_hardcore.nii file is written into the input_nii variable**
 
 
----
+## 🧠 Why KMRI?
 
-## License & Contact
+**Standard .nii files:**
 
-The license in this project is the **BSD 3-Clause** license
+• Store raw voxel arrays
+• No chunking
+• No structural awareness
+• Large and inefficient
 
-If you have any inquiries or questions, feel free to email me at kiamehr13922014@gmail.com
+Even .nii.gz:
+
+• Applies gzip to the entire file
+•No intelligent compression
+
+**KMRI improves this with:**
+
+• Chunk-level compression
+• Structural awareness
+• Quantization
+• Smarter storage of empty regions
+
+👉 Result: smaller files + faster decoding
+
+## 📊 Benchmarks (Synthetic MRI)
+
+All tests use a high-entropy synthetic MRI with:
+
+• Rician noise
+
+• Bias field
+
+• Random lesions
+
+• High-frequency noise
+
+• Partial-volume blur
+
+• No zero regions
+
+• Dataset	Raw Size	KMRI	Ratio	Notes
+
+• 512³ uint16	256 MB	42.1 MB	6.07×	High-entropy synthetic MRI
+
+• 800³ uint16	1.02 GB	1.1 MB	927×	Smooth synthetic MRI
+
+**Extremely high ratios occur in smoother volumes where zero-block skipping dominates.**
+
+## 🧪 Reproducible Test
+``python test.py``
+
+**Note: test.py expects synthetic_realistic_hardcore.nii in the working directory.**
+
+## 🧬 Synthetic MRI Generator
+
+This project includes a fully synthetic MRI generator (no real medical data), simulating:
+
+• White / grey matter / CSF structure
+
+• Rician noise
+
+• Bias field distortion
+
+• Random lesions
+
+• High-frequency noise
+
+• Partial-volume blur
+
+## 📦 Repository Contents
+
+• Encoder / decoder implementation
+
+• Synthetic MRI generator
+
+• KMRI format reference
+
+## 🎯 Use Cases
+• Neuroimaging research pipelines
+
+• Large volumetric dataset storage
+
+• Compression experimentation
+
+• Fast prototyping of MRI workflows
+
+## 📜 License
+
+**This project is licensed under the BSD 3-Clause License.**
+
+## 📬 Contact
+
+For questions or feedback:
+📧 kiamehr13922014@gmail.com
