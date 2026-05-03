@@ -1,0 +1,3 @@
+P:/Class_2026/Projects/KMRI/build/CMakeFiles/kmri_core.dir
+P:/Class_2026/Projects/KMRI/build/CMakeFiles/ALL_BUILD.dir
+P:/Class_2026/Projects/KMRI/build/CMakeFiles/ZERO_CHECK.dir

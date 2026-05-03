@@ -1,0 +1,21 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Build / compiled stuff (you accidentally generated a LOT of this)
+build/
+*.dll
+*.pyd
+*.lib
+*.exp
+*.obj
+
+# datasets / large files
+*.nii
+*.nii.gz
+*.kmri
+
+# system
+.DS_Store

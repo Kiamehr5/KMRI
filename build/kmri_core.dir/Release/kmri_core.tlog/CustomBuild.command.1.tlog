@@ -1,0 +1,10 @@
+^P:\CLASS_2026\PROJECTS\KMRI\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SP:/Class_2026/Projects/KMRI -BP:/Class_2026/Projects/KMRI/build --check-stamp-file P:/Class_2026/Projects/KMRI/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
