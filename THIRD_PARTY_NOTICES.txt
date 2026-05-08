@@ -1,0 +1,5 @@
+This project uses Zstandard (zstd)
+Copyright (c) Meta Platforms, Inc. and affiliates.
+
+Licensed under the BSD License.
+https://github.com/facebook/zstd
