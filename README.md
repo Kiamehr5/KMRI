@@ -53,21 +53,9 @@ Even .nii.gz:
 
 ## 📊 Benchmarks (Synthetic MRI)
 
-All tests use a high-entropy synthetic MRI with:
+All tests use realistic MRI samples from the BraTS dataset with:
 
-• Rician noise
-
-• Bias field
-
-• Random lesions
-
-• High-frequency noise
-
-• Partial-volume blur
-
-• No zero regions
-
-• Dataset	Raw Size	KMRI	Ratio	Notes
+Synthetic datasets include: 
 
 • 512³ uint16	256 MB	42.1 MB	6.07×	High-entropy synthetic MRI
 
@@ -76,9 +64,10 @@ All tests use a high-entropy synthetic MRI with:
 **Extremely high ratios occur in smoother volumes where zero-block skipping dominates.**
 
 ## 🧪 Reproducible Test
-``python test.py``
+``python benchmark.py``
 
-**Note: test.py expects synthetic_realistic_hardcore.nii in the working directory.**
+Note that benchmark.py expects the "test_nii" folder in the same working directory (otherwise specify the path in code)
+(test_nii folder is to download at 
 
 ## 🧬 Synthetic MRI Generator
 
