@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "dataset_path": "demo_data/",
+    "trials": 5
+  },
+  "results": [
+    {
+      "file": "sub-01_T1w.nii",
+      "method": "GZIP (Raw .nii)",
+      "compression_ratio": 1.4,
+      "encode_time_ms_mean": 1250.0,
+      "encode_time_ms_std": 45.2,
+      "decode_time_ms_mean": 980.5,
+      "decode_time_ms_std": 30.1,
+      "peak_memory_mb_mean": 450.2,
+      "psnr_mean": "Infinity",
+      "ssim_mean": 1.0
+    },
+    {
+      "file": "sub-01_T1w.nii",
+      "method": "Zstd (Raw .nii)",
+      "compression_ratio": 1.6,
+      "encode_time_ms_mean": 850.3,
+      "encode_time_ms_std": 20.4,
+      "decode_time_ms_mean": 410.2,
+      "decode_time_ms_std": 15.6,
+      "peak_memory_mb_mean": 380.0,
+      "psnr_mean": "Infinity",
+      "ssim_mean": 1.0
+    },
+    {
+      "file": "sub-01_T1w.nii",
+      "method": "NumPy+Zstd Level 3",
+      "compression_ratio": 2.1,
+      "encode_time_ms_mean": 730.0,
+      "encode_time_ms_std": 18.2,
+      "decode_time_ms_mean": 390.8,
+      "decode_time_ms_std": 12.1,
+      "peak_memory_mb_mean": 320.5,
+      "psnr_mean": "Infinity",
+      "ssim_mean": 1.0
+    },
+    {
+      "file": "sub-01_T1w.nii",
+      "method": "KMRI (12-bit, ROI Lvl 5)",
+      "compression_ratio": 3.8,
+      "encode_time_ms_mean": 620.5,
+      "encode_time_ms_std": 10.3,
+      "decode_time_ms_mean": 210.4,
+      "decode_time_ms_std": 8.5,
+      "peak_memory_mb_mean": 150.3,
+      "psnr_mean": 54.2,
+      "ssim_mean": 0.995
+    },
+    {
+      "file": "sub-01_T1w.nii",
+      "method": "KMRI (10-bit, ROI Lvl 5)",
+      "compression_ratio": 6.2,
+      "encode_time_ms_mean": 615.2,
+      "encode_time_ms_std": 9.8,
+      "decode_time_ms_mean": 205.1,
+      "decode_time_ms_std": 7.2,
+      "peak_memory_mb_mean": 145.8,
+      "psnr_mean": 46.8,
+      "ssim_mean": 0.985
+    },
+    {
+      "file": "sub-01_T1w.nii",
+      "method": "KMRI (8-bit, ROI Lvl 5)",
+      "compression_ratio": 12.5,
+      "encode_time_ms_mean": 605.4,
+      "encode_time_ms_std": 11.2,
+      "decode_time_ms_mean": 195.3,
+      "decode_time_ms_std": 6.8,
+      "peak_memory_mb_mean": 140.2,
+      "psnr_mean": 38.5,
+      "ssim_mean": 0.960
+    }
+  ]
+}

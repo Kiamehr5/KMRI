@@ -1,0 +1,9 @@
+Instructions:
+(WINDOWS POWERSHELL)
+mkdir build
+cd build
+cmake ..
+cmake --build . --config Release
+# build the kmri_core.cpp file into a pyd file so python recognises it 
+# benchmark test:
+python benchmark.py

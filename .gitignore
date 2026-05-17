@@ -1,0 +1,15 @@
+# compiled / binaries
+*.pyd
+*.dll
+
+# medical data formats
+*.nii
+*.nii.gz
+
+# build folders
+build/
+vcpkg/
+
+# optional noise
+__pycache__/
+*.log
