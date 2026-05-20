@@ -168,6 +168,27 @@ Metrics include:
 
 ---
 
+
+## Benchmark results
+
+
+**PSNR**
+
+<p align="center"> <img src="benchmarks/benchmark_results/rate_distortion_psnr.png" width="650"/> </p>
+
+**SSIM**
+
+<p align="center"> <img src="benchmarks/benchmark_results/rate_distortion_ssim.png" width="650"/> </p>
+
+**Latency**
+
+<p align="center"> <img src="benchmarks/benchmark_results/latency_profile.png" width="650"/> </p>
+
+**Baseline Comparison**
+
+<p align="center"> <img src="benchmarks/benchmark_results/baseline_comparison.png" width="650"/> </p>
+
+
 # Example Encode
 
 ```python
