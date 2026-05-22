@@ -1,284 +1,145 @@
 # KMRI
 
-> A modern medical imaging compression framework built to push beyond traditional `.nii.gz`.
+> Experimental medical imaging compression framework exploring chunked, structure-aware alternatives to `.nii.gz` (gzip-based NIfTI compression)
 
-KMRI is an experimental high-performance medical imaging compression system written in Python and C++.  
-It combines:
+KMRI is a high-performance compression system for volumetric MRI/NIfTI data written in **Python + C++ (pybind11)**.
 
-- **Zstandard (Zstd)** compression
-- **Chunk-based volume encoding**
-- **Adaptive ROI-aware compression**
-- **Quantization**
-- **Sparse zero-block optimization**
-- **Fast decompression pipelines**
-
-The goal is simple:
-
-> better compression, faster decoding, and smarter storage for MRI/NIfTI data.
+It investigates whether **structure-aware compression** (regions, sparsity, chunking, quantization) can outperform traditional general-purpose compression like gzip.
 
 ---
 
-## Why KMRI?
+## ⚡ Why KMRI?
 
-Traditional `.nii.gz` files rely on GZIP — a format from the 1990s that was never designed specifically for modern volumetric medical imaging workloads.
+Standard `.nii.gz` compression treats medical imaging data as raw bytes.
 
-KMRI explores a more specialized approach by using:
+KMRI instead asks:
 
-- Zstd instead of GZIP
-- chunk-aware encoding
-- region-aware compression levels
-- optional lossy quantization for intensity volumes
-- exact preservation for segmentation masks
-- low-overhead binary container structures
+> What if we compress MRI data using knowledge of its structure?
+
+This enables:
+- region-aware compression decisions
+- chunk-level optimization for volumetric data
+- better speed vs quality trade-offs
+- adaptive handling of sparse regions
 
 ---
 
-## Features
+## 📊 Results Snapshot
 
-- Fast C++ compression core using pybind11
-- Zstandard-based compression backend
-- ROI-aware chunk compression
-- Automatic mask/intensity detection
-- Optional N-bit quantization
-- Sparse chunk optimization
-- Benchmark suite with:
+KMRI has been benchmarked against:
+- `.nii.gz` (GZIP)
+- raw Zstandard compression
+- NumPy + Zstd pipelines
+
+Across test datasets, KMRI demonstrates:
+
+- ✔ improved compression ratios (vs gzip baseline)
+- ✔ faster decode performance via chunked design
+- ✔ high reconstruction fidelity (PSNR / SSIM preserved)
+
+Full benchmark suite included below.
+
+---
+
+## 🚀 Features
+
+- ⚙ Fast C++ compression core (pybind11 + Zstd)
+- 🧠 Chunk-based volumetric encoding
+- 🎯 ROI-aware adaptive compression
+- 📉 Sparse zero-block optimization
+- 🔢 Optional N-bit quantization (8–16 bit)
+- 🧬 Automatic mask vs intensity detection
+- 📦 Custom `.kmri` binary container format
+- 📊 Full benchmarking suite:
   - compression ratio analysis
   - latency profiling
-  - PSNR + SSIM fidelity metrics
-  - baseline comparisons against GZIP and Zstd
-- Native `.kmri` container format
+  - PSNR / SSIM fidelity metrics
+  - baseline comparisons vs gzip & zstd
 
 ---
 
-# Project Structure
+## 📈 Benchmark Visuals
 
-```text
-KMRI/
-│
-├── kmri_encode.py
-├── kmri_decode.py
-├── kmri_core.cpp
-│
-├── benchmarks/
-│   └── benchmark/
-│       └── run_benchmark.py
-│
-└── ...
-```
+### Compression Quality (PSNR)
+<p align="center">
+  <img src="benchmarks/benchmark_results/rate_distortion_psnr.png" width="650"/>
+</p>
 
----
+### Structural Similarity (SSIM)
+<p align="center">
+  <img src="benchmarks/benchmark_results/rate_distortion_ssim.png" width="650"/>
+</p>
 
-# How It Works
+### Latency Profile
+<p align="center">
+  <img src="benchmarks/benchmark_results/latency_profile.png" width="650"/>
+</p>
 
-## Encoding Pipeline
-
-1. Load NIfTI volume
-2. Detect whether the volume is:
-   - an intensity scan
-   - or a segmentation mask
-3. Split volume into chunks
-4. Apply:
-   - quantization (optional)
-   - ROI-aware compression
-   - zero-block skipping
-5. Compress chunks using Zstd
-6. Store everything in the `.kmri` binary format
+### Baseline Comparison
+<p align="center">
+  <img src="benchmarks/benchmark_results/baseline_comparison.png" width="650"/>
+</p>
 
 ---
 
-## Decoding Pipeline
+## 🧠 How It Works
 
-1. Read KMRI header + chunk table
-2. Decompress chunk data
-3. Reconstruct volume
-4. Dequantize if required
-5. Export reconstructed NIfTI
+### 1. Encoding Pipeline
+- Load NIfTI volume
+- Detect mask vs intensity data
+- Split into 3D chunks
+- Apply:
+  - quantization (optional)
+  - ROI-aware compression levels
+  - zero-block skipping
+- Compress each chunk using Zstd (C++ core)
+- Store in `.kmri` container format
 
 ---
 
-# Compression Design
+### 2. Decoding Pipeline
+- Read metadata header + chunk table
+- Decompress chunks
+- Reconstruct 3D volume
+- Apply dequantization (if needed)
+- Export reconstructed NIfTI file
 
-## Quantization
+---
 
-Intensity volumes can be quantized to lower bit depths:
+## 🔧 Compression Design
+
+### 🔢 Quantization
+Intensity volumes can be reduced to:
 
 - 8-bit
 - 10-bit
 - 12-bit
 - up to 16-bit
 
-This reduces storage while preserving usable image quality.
+This reduces storage while preserving diagnostic quality.
 
 Segmentation masks remain lossless.
 
 ---
 
-## ROI-Aware Compression
+### 🎯 ROI-Aware Compression
+Different regions are treated differently:
 
-KMRI can compress important regions differently from background regions.
-
-Example:
-
-- ROI chunks → lower compression level for speed/detail
-- Background chunks → stronger compression
+- ROI chunks → higher fidelity (lower compression level)
+- Background chunks → higher compression (faster + smaller)
 
 ---
 
-## Sparse Optimization
+### 📦 Sparse Optimization
+Completely empty chunks are not stored as data — only metadata flags.
 
-Completely empty chunks are skipped entirely and represented with metadata flags instead of compressed payloads.
-
-This can significantly reduce storage for sparse scans.
+This significantly reduces size for sparse scans.
 
 ---
 
-# Benchmarking
+## 🧪 Benchmarking
 
-Run the benchmark suite:
+Run the full benchmark suite:
 
 ```bash
 python KMRI/benchmarks/benchmark/run_benchmark.py --input path/to/nifti_dataset
-```
-
-Outputs include:
-
-- JSON benchmark reports
-- CSV summaries
-- PSNR/SSIM plots
-- latency analysis PDFs
-- baseline comparison charts
-
----
-
-# Benchmarked Against
-
-KMRI compares itself against:
-
-- GZIP (`.nii.gz`)
-- Raw Zstd compression
-- NumPy + Zstd pipelines
-
-Metrics include:
-
-- Compression ratio
-- Encode/decode latency
-- Peak memory usage
-- PSNR
-- SSIM
-
----
-
-
-## Benchmark results
-
-
-**PSNR**
-
-<p align="center"> <img src="benchmarks/benchmark_results/rate_distortion_psnr.png" width="650"/> </p>
-
-**SSIM**
-
-<p align="center"> <img src="benchmarks/benchmark_results/rate_distortion_ssim.png" width="650"/> </p>
-
-**Latency**
-
-<p align="center"> <img src="benchmarks/benchmark_results/latency_profile.png" width="650"/> </p>
-
-**Baseline Comparison**
-
-<p align="center"> <img src="benchmarks/benchmark_results/baseline_comparison.png" width="650"/> </p>
-
-
-# Example Encode
-
-```python
-import kmri_encode
-
-kmri_encode.encode_kmri_cpp(
-    "brain_scan.nii",
-    "brain_scan.kmri",
-    bits=10
-)
-```
-
----
-
-# Example Decode
-
-```python
-import kmri_decode
-
-kmri_decode.decode_kmri_cpp(
-    "brain_scan.kmri",
-    "reconstructed_scan.nii"
-)
-```
-
----
-
-# Tech Stack
-
-## Python
-
-- NumPy
-- NiBabel
-- Pandas
-- Matplotlib
-- Pybind11
-
-## C++
-
-- Zstandard (Zstd)
-- pybind11 bindings
-
----
-
-# KMRI File Format
-
-Each `.kmri` file contains:
-
-- magic bytes
-- versioning
-- metadata header
-- chunk lookup table
-- compressed chunk payloads
-
-The format is designed to stay lightweight and fast to parse.
-
----
-
-# Status
-
-KMRI is currently experimental and under active development.
-
-Areas being explored:
-
-- GPU acceleration
-- streaming decode
-- better ROI detection
-- entropy modeling
-- parallel chunk encoding
-- learned compression techniques
-
----
-
-# Vision
-
-KMRI is an attempt to rethink medical imaging compression from the ground up instead of continuing to rely on generic archival formats.
-
-Not just smaller files.
-
-Smarter files.
-
----
-
-# License
-
-BSD 3-Clause
-
----
-
-# Author & Contact
-
-Built by Kiamehr.
-Contact at kiamehr13922014@gmail.com
