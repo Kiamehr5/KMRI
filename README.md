@@ -2,113 +2,159 @@
 
 > Experimental medical imaging compression framework exploring chunked, structure-aware alternatives to `.nii.gz` (gzip-based NIfTI compression)
 
-KMRI is a high-performance compression system for volumetric MRI/NIfTI data written in **Python + C++ (pybind11)**.
+KMRI is a high-performance medical imaging compression system for volumetric MRI/NIfTI data built with **Python + C++ (pybind11 + Zstd)**.
 
-It investigates whether **structure-aware compression** (regions, sparsity, chunking, quantization) can outperform traditional general-purpose compression like gzip.
-
----
-
-## ⚡ Why KMRI?
-
-Standard `.nii.gz` compression treats medical imaging data as raw bytes.
-
-KMRI instead asks:
-
-> What if we compress MRI data using knowledge of its structure?
-
-This enables:
-- region-aware compression decisions
-- chunk-level optimization for volumetric data
-- better speed vs quality trade-offs
-- adaptive handling of sparse regions
+It explores whether **structure-aware compression** can outperform traditional generic compression methods like gzip.
 
 ---
 
-## 📊 Results Snapshot
+# ⚡ TL;DR
 
-KMRI has been benchmarked against:
-- `.nii.gz` (GZIP)
+KMRI is an experimental replacement for `.nii.gz` that:
+
+- splits MRI volumes into chunks
+- applies ROI-aware compression strategies
+- uses Zstandard instead of gzip
+- optionally quantizes intensity data
+- preserves segmentation masks losslessly
+- improves compression vs speed trade-offs
+
+---
+
+# 🧠 Why this project exists
+
+Most medical imaging pipelines still rely on:
+
+> `.nii.gz` = raw gzip compression of entire volume
+
+This is simple — but inefficient.
+
+KMRI explores a different idea:
+
+> What if compression understood the structure of the data?
+
+Instead of treating MRI scans as flat byte streams, KMRI uses:
+- spatial awareness
+- region importance (ROI)
+- sparsity detection
+- adaptive compression levels
+
+---
+
+# 📊 What KMRI tries to improve
+
+Compared to `.nii.gz` (gzip):
+
+- better compression ratios on structured data
+- faster decode performance via chunked access
+- more control over quality vs size
+- smarter handling of empty/sparse regions
+
+---
+
+# 🚀 Features
+
+- ⚙ C++ compression core using Zstd (via pybind11)
+- 🧩 Chunk-based 3D volume encoding
+- 🎯 ROI-aware adaptive compression
+- 🧠 Automatic mask vs intensity detection
+- 🔢 Optional N-bit quantization (8–16 bit)
+- 📦 Sparse chunk skipping (zero-block optimization)
+- 🧬 Custom `.kmri` container format
+- 📊 Full benchmark suite:
+  - compression ratio analysis
+  - latency profiling
+  - PSNR / SSIM evaluation
+  - comparison against gzip & zstd baselines
+
+---
+
+# 📈 Benchmarks
+
+KMRI is evaluated against:
+
+- `.nii.gz` (gzip baseline)
 - raw Zstandard compression
 - NumPy + Zstd pipelines
 
-Across test datasets, KMRI demonstrates:
+Metrics:
 
-- ✔ improved compression ratios (vs gzip baseline)
-- ✔ faster decode performance via chunked design
-- ✔ high reconstruction fidelity (PSNR / SSIM preserved)
-
-Full benchmark suite included below.
-
----
-
-## 🚀 Features
-
-- ⚙ Fast C++ compression core (pybind11 + Zstd)
-- 🧠 Chunk-based volumetric encoding
-- 🎯 ROI-aware adaptive compression
-- 📉 Sparse zero-block optimization
-- 🔢 Optional N-bit quantization (8–16 bit)
-- 🧬 Automatic mask vs intensity detection
-- 📦 Custom `.kmri` binary container format
-- 📊 Full benchmarking suite:
-  - compression ratio analysis
-  - latency profiling
-  - PSNR / SSIM fidelity metrics
-  - baseline comparisons vs gzip & zstd
+- compression ratio
+- encode time
+- decode time
+- memory usage
+- PSNR
+- SSIM
 
 ---
 
-## 📈 Benchmark Visuals
+## 📉 Benchmark Results
 
-### Compression Quality (PSNR)
+### PSNR (reconstruction quality)
+
 <p align="center">
   <img src="benchmarks/benchmark_results/rate_distortion_psnr.png" width="650"/>
 </p>
 
-### Structural Similarity (SSIM)
+---
+
+### SSIM (structural similarity)
+
 <p align="center">
   <img src="benchmarks/benchmark_results/rate_distortion_ssim.png" width="650"/>
 </p>
 
-### Latency Profile
+---
+
+### Latency comparison
+
 <p align="center">
   <img src="benchmarks/benchmark_results/latency_profile.png" width="650"/>
 </p>
 
-### Baseline Comparison
+---
+
+### Baseline comparison
+
 <p align="center">
   <img src="benchmarks/benchmark_results/baseline_comparison.png" width="650"/>
 </p>
 
 ---
 
-## 🧠 How It Works
+# ⚙ How it works
 
-### 1. Encoding Pipeline
-- Load NIfTI volume
-- Detect mask vs intensity data
-- Split into 3D chunks
-- Apply:
-  - quantization (optional)
-  - ROI-aware compression levels
-  - zero-block skipping
-- Compress each chunk using Zstd (C++ core)
-- Store in `.kmri` container format
+## Encoding pipeline
 
----
-
-### 2. Decoding Pipeline
-- Read metadata header + chunk table
-- Decompress chunks
-- Reconstruct 3D volume
-- Apply dequantization (if needed)
-- Export reconstructed NIfTI file
+1. Load NIfTI volume
+2. Detect type:
+   - segmentation mask
+   - intensity scan
+3. Split into 3D chunks
+4. Apply:
+   - quantization (optional)
+   - ROI-aware compression strategy
+   - sparse chunk skipping
+5. Compress chunks using Zstd (C++ core)
+6. Write `.kmri` file with metadata + chunk table
 
 ---
 
-## 🔧 Compression Design
+## Decoding pipeline
 
-### 🔢 Quantization
+1. Read `.kmri` header
+2. Load chunk index table
+3. Decompress chunk data
+4. Reconstruct full 3D volume
+5. Apply dequantization (if needed)
+6. Export NIfTI output
+
+---
+
+# 🔧 Compression design
+
+## Quantization
+
 Intensity volumes can be reduced to:
 
 - 8-bit
@@ -116,30 +162,157 @@ Intensity volumes can be reduced to:
 - 12-bit
 - up to 16-bit
 
-This reduces storage while preserving diagnostic quality.
+This reduces storage while maintaining useful reconstruction quality.
 
-Segmentation masks remain lossless.
-
----
-
-### 🎯 ROI-Aware Compression
-Different regions are treated differently:
-
-- ROI chunks → higher fidelity (lower compression level)
-- Background chunks → higher compression (faster + smaller)
+Segmentation masks remain fully lossless.
 
 ---
 
-### 📦 Sparse Optimization
-Completely empty chunks are not stored as data — only metadata flags.
+## 🎯 ROI-aware compression
 
-This significantly reduces size for sparse scans.
+Not all regions are equal:
+
+- ROI (important tissue regions): higher fidelity
+- background: higher compression
+
+This improves efficiency without sacrificing key information.
 
 ---
 
-## 🧪 Benchmarking
+## 📦 Sparse optimization
 
-Run the full benchmark suite:
+Completely empty chunks are not stored as full payloads.
 
-```bash
-python KMRI/benchmarks/benchmark/run_benchmark.py --input path/to/nifti_dataset
+Instead, they are represented using metadata flags, reducing storage for sparse scans.
+
+---
+
+# 🧪 Benchmarking
+
+Run benchmarks:
+
+```python KMRI/benchmarks/benchmark/run_benchmark.py --input path/to/nifti_dataset```
+
+Outputs:
+
+**JSON results**
+
+**CSV summaries**
+
+**latency analysis**
+
+**PSNR / SSIM plots**
+
+**baseline comparison charts**
+
+# 🏗 Project structure
+
+KMRI/
+│
+├── kmri_encode.py
+├── kmri_decode.py
+├── kmri_core.cpp
+│
+├── benchmarks/
+│   └── benchmark/
+│       └── run_benchmark.py
+│
+└── ...
+# 💡 Example usage
+
+## Encode
+```
+import kmri_encode
+
+kmri_encode.encode_kmri_cpp(
+    "brain_scan.nii",
+    "brain_scan.kmri",
+    bits=10
+)
+```
+## Decode
+```
+import kmri_decode
+
+kmri_decode.decode_kmri_cpp(
+    "brain_scan.kmri",
+    "reconstructed_scan.nii"
+)
+```
+# 🧰 Tech stack
+
+**Python**
+
+**NumPy**
+
+**NiBabel**
+
+**Pandas**
+
+**Matplotlib**
+
+**Pybind11**
+
+**C++**
+
+**Zstandard (Zstd)**
+
+**pybind11 bindings**
+
+# 📦 KMRI file format
+
+Each .kmri file contains:
+
+**magic bytes + version**
+
+**JSON metadata header**
+
+**chunk lookup table**
+
+**compressed chunk payloads**
+
+# Designed for:
+
+**fast decoding**
+
+**low overhead**
+
+**scalable volumetric storage**
+
+# 🧭 Status
+
+**KMRI is experimental and actively evolving.**
+
+Current research directions:
+
+GPU acceleration
+
+streaming decode
+
+improved ROI detection
+
+entropy modeling
+
+parallel compression
+
+learned compression approaches
+
+# 🎯 Vision
+
+KMRI explores a simple idea:
+
+**Compression should understand structure, not just bytes.**
+
+Not just smaller files.
+
+**Smarter files.**
+
+# 📄 License
+
+BSD 3-Clause
+
+# 👤 Author
+
+Built by Kiamehr
+
+Contact: kiamehr13922014@gmail.com
