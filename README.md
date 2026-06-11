@@ -10,7 +10,7 @@ It explores whether **structure-aware compression** can outperform traditional g
 
 # ⚡ TL;DR
 
-KMRI is an experimental replacement for `.nii.gz` that:
+Structure-aware compression framework for volumetric medical imaging that has:
 
 - splits MRI volumes into chunks
 - applies ROI-aware compression strategies
